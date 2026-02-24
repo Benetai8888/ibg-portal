@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Panel de Operaciones — IBG Legal · Cancún, Q. Roo">
+<meta name="theme-color" content="#1a1a1a">
+<title>IBG Legal · Panel</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,600&family=Jost:wght@200;300;400;500;600&display=swap" rel="stylesheet">
+<style>
+#login-wall{position:fixed;inset:0;z-index:9999;background:var(--blk,#111);display:flex;align-items:center;justify-content:center;font-family:'Jost',system-ui,sans-serif}
+#login-wall.hidden{display:none}
+#login-box{text-align:center;width:320px}
+#login-box img{width:96px;opacity:.88;filter:invert(1);margin-bottom:24px}
+#login-box .lb-title{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:500;color:#fff;margin-bottom:6px;letter-spacing:.3px}
+#login-box .lb-sub{font-size:8px;letter-spacing:4px;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:32px;font-weight:300}
+#login-box input{width:100%;padding:12px 16px;border:1px solid rgba(255,255,255,.12);border-radius:8px;background:rgba(255,255,255,.06);color:#fff;font-family:inherit;font-size:13px;font-weight:300;letter-spacing:1px;outline:none;text-align:center;transition:border-color .25s}
+#login-box input:focus{border-color:rgba(181,160,122,.5)}
+#login-box input::placeholder{color:rgba(255,255,255,.2);letter-spacing:2px}
+#login-box .lb-btn{margin-top:16px;width:100%;padding:11px;border:none;border-radius:8px;background:rgba(255,255,255,.08);color:rgba(255,255,255,.6);font-family:inherit;font-size:10px;font-weight:400;letter-spacing:3px;text-transform:uppercase;cursor:pointer;transition:all .25s}
+#login-box .lb-btn:hover{background:rgba(255,255,255,.12);color:#fff}
+#login-box .lb-err{color:#a03030;font-size:10px;margin-top:12px;opacity:0;transition:opacity .3s;font-weight:300;letter-spacing:.5px}
+#login-box .lb-err.show{opacity:1}
+:root{
+  --blk:#111; --ink:#2a2a2a; --forest:#2c3330; --dark:#1e2320;
+  --mid:#777; --soft:#999; --light:#ccc; --pale:#eaeaea;
+  --bone:#f7f7f7; --white:#fff;
+  --gold:#b5a07a; --red:#a03030; --green:#3d6b4e; --orange:#996b1a;
+  --sw:232px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Jost',system-ui,-apple-system,'Helvetica Neue',sans-serif;background:var(--bone);color:var(--ink);display:flex;min-height:100vh;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;font-weight:300;letter-spacing:.2px}
+
+/* ── SIDEBAR ── */
+#sb{width:var(--sw);background:var(--blk);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:100;transition:transform .3s cubic-bezier(.4,0,.2,1)}
+#sb-logo{padding:28px 24px 24px;border-bottom:1px solid rgba(255,255,255,.06)}
+#sb-logo img{width:96px;filter:invert(1);opacity:.88}
+#sb-logo .sub{font-size:8px;letter-spacing:4px;text-transform:uppercase;color:rgba(255,255,255,.4);margin-top:12px;font-weight:300}
+nav{flex:1;padding:12px 0;overflow-y:auto}
+.ns{font-size:7px;font-weight:400;letter-spacing:4px;text-transform:uppercase;color:rgba(255,255,255,.35);padding:20px 24px 6px}
+nav button{display:flex;align-items:center;gap:10px;width:100%;padding:11px 24px;border:none;cursor:pointer;text-align:left;background:transparent;color:rgba(255,255,255,.6);font-size:11px;font-family:inherit;transition:all .25s;border-left:2px solid transparent;letter-spacing:.5px;font-weight:300}
+nav button:hover{color:rgba(255,255,255,.9)}
+nav button.on{color:#fff;font-weight:500;border-left-color:var(--gold);background:rgba(255,255,255,.06)}
+nav button .ni{font-size:11px;flex-shrink:0;opacity:.75}
+#sb-user{padding:18px 24px;border-top:1px solid rgba(255,255,255,.06);display:flex;align-items:center;gap:10px}
+.av{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:500;color:#fff;flex-shrink:0;letter-spacing:1px}
+#sb-user .un{font-size:11px;font-weight:400;color:rgba(255,255,255,.85);line-height:1.3;letter-spacing:.5px}
+#sb-user .ur{font-size:8px;color:rgba(255,255,255,.4);margin-top:2px;letter-spacing:.3px;font-weight:300}
+
+/* ── MAIN ── */
+#main{margin-left:var(--sw);flex:1;padding:44px 44px 60px;min-height:100vh;max-width:1200px}
+.view{display:none;animation:fi .35s cubic-bezier(.4,0,.2,1)}
+.view.on{display:block}
+@keyframes fi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── TYPE ── */
+.pt{font-family:'Cormorant Garamond',Georgia,serif;font-size:28px;font-weight:500;color:var(--blk);line-height:1.15;margin-bottom:4px;letter-spacing:-.3px}
+.pt span{font-style:italic;font-weight:300}
+.ps{font-size:9px;color:var(--soft);letter-spacing:2.5px;text-transform:uppercase;margin-bottom:28px;font-weight:300}
+.st{font-size:8px;font-weight:400;color:var(--soft);text-transform:uppercase;letter-spacing:3px;margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid var(--pale)}
+
+/* ── CARD ── */
+.card{background:var(--white);border:1px solid rgba(0,0,0,.06);border-radius:10px;padding:22px;box-shadow:0 1px 2px rgba(0,0,0,.03)}
+.csm{background:var(--white);border:1px solid rgba(0,0,0,.06);border-radius:10px;padding:16px 18px;box-shadow:0 1px 2px rgba(0,0,0,.03)}
+
+/* ── GRID ── */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+
+/* ── LINK CARD ── */
+.lc{display:flex;align-items:center;gap:14px;background:var(--white);border:1px solid rgba(0,0,0,.06);border-radius:10px;padding:14px 18px;text-decoration:none;transition:all .3s cubic-bezier(.4,0,.2,1)}
+.lc:hover{border-color:rgba(0,0,0,.12);box-shadow:0 6px 24px rgba(0,0,0,.06);transform:translateY(-1px)}
+.lc .lci{font-size:16px;flex-shrink:0;opacity:.85}
+.lc .lcn{font-size:11.5px;font-weight:500;color:var(--blk);line-height:1.25;letter-spacing:.2px}
+.lc .lcd{font-size:9px;color:var(--soft);margin-top:3px;line-height:1.4;font-weight:300;letter-spacing:.2px}
+.lc .lct{font-size:7px;font-weight:500;padding:3px 10px;border-radius:20px;color:#fff;margin-left:auto;flex-shrink:0;align-self:center;letter-spacing:1px;text-transform:uppercase}
+.lc.alerta{border-left:2px solid var(--red)!important;background:rgba(160,48,48,.02)}
+
+/* ── BADGE ── */
+.badge{display:inline-block;font-size:7px;font-weight:500;padding:3px 10px;border-radius:20px;color:#fff;letter-spacing:1px;text-transform:uppercase}
+
+/* ── TEAM ── */
+.tc{display:flex;align-items:flex-start;gap:12px}
+.tn{font-family:'Cormorant Garamond',serif;font-size:15px;font-weight:500;color:var(--blk);letter-spacing:.2px}
+.tr{font-size:9px;color:var(--soft);font-weight:400;text-transform:uppercase;letter-spacing:1.5px;margin-top:3px}
+
+
+/* ── ALERT ── */
+.al-blk{background:var(--forest);color:var(--white);border-radius:10px;padding:16px 22px;font-size:11px;line-height:1.7;margin-bottom:24px;font-weight:300}
+
+/* ── MODAL ── */
+#ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);z-index:999;align-items:center;justify-content:center}
+#ov.show{display:flex}
+#mb{background:var(--white);border-radius:14px;padding:36px;width:380px;box-shadow:0 32px 80px rgba(0,0,0,.18)}
+input,textarea,select{font-family:inherit;font-size:12px;border:1px solid var(--pale);border-radius:8px;padding:10px 14px;outline:none;background:var(--white);color:var(--ink);width:100%;transition:all .2s;font-weight:300}
+input:focus,textarea:focus,select:focus{border-color:var(--blk);box-shadow:0 0 0 3px rgba(0,0,0,.04)}
+label{font-size:8px;font-weight:400;color:var(--soft);text-transform:uppercase;letter-spacing:2px;display:block;margin-bottom:6px}
+.fg{margin-bottom:14px}
+.btn{border:none;border-radius:8px;padding:10px 22px;font-size:11px;font-weight:500;cursor:pointer;font-family:inherit;transition:all .25s;letter-spacing:.5px}
+.bd{background:var(--blk);color:#fff}.bd:hover{background:#222}
+.bo{background:none;border:1px solid var(--pale);color:var(--mid)}.bo:hover{border-color:var(--blk);color:var(--blk)}
+
+/* ── MOBILE ── */
+#mt{display:none;position:fixed;top:16px;left:16px;z-index:200;background:var(--blk);border:none;border-radius:8px;padding:10px 13px;cursor:pointer;font-size:14px;color:#fff}
+@media(max-width:768px){#mt{display:block}#sb{transform:translateX(-100%)}#sb.open{transform:translateX(0)}#main{margin-left:0;padding:60px 20px 36px}.g4,.g3{grid-template-columns:1fr 1fr}}
+@media(max-width:480px){.g4,.g3,.g2{grid-template-columns:1fr}}
+::-webkit-scrollbar{width:4px;height:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:rgba(0,0,0,.12);border-radius:4px}::-webkit-scrollbar-thumb:hover{background:rgba(0,0,0,.2)}
+
+</style>
+</head>
+<body>
+<div id="login-wall">
+  <div id="login-box">
+    <div class="lb-title">IBG Legal</div>
+    <div class="lb-sub">Panel de Operaciones</div>
+    <input type="password" id="pw-input" placeholder="Contraseña" autofocus>
+    <button class="lb-btn" onclick="checkPw()">Acceder</button>
+    <div class="lb-err" id="pw-err">Contraseña incorrecta</div>
+  </div>
+</div>
+<script>
+async function hashPw(pw){
+  const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(pw));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+async function checkPw(){
+  const pw=document.getElementById('pw-input').value;
+  const h=await hashPw(pw);
+  if(h==='6c7b1ae2dbcc29e7056ca3cd256e1073ef2909a0ecbe7361dd89755dfa34ea7a'){
+    document.getElementById('login-wall').classList.add('hidden');
+    sessionStorage.setItem('ibg-auth','1');
+  } else {
+    document.getElementById('pw-err').classList.add('show');
+    document.getElementById('pw-input').value='';
+    setTimeout(()=>document.getElementById('pw-err').classList.remove('show'),2000);
+  }
+}
+document.getElementById('pw-input').addEventListener('keydown',e=>{if(e.key==='Enter')checkPw()});
+if(sessionStorage.getItem('ibg-auth')==='1')document.getElementById('login-wall').classList.add('hidden');
+</script>
+<button id="mt" onclick="tsb()" aria-label="Abrir menú de navegación">☰</button>
+<div id="sb">
+  <div id="sb-logo">
+    <img src="data:image/jpeg;base64,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lRf3Fo8qL+4tS0UAReVF/cWjyov7i1LRQBF5UX9xaPKi/uLUtFAEXlRf3Fo8qL+4tS0UAReVF/cWjyov7i1LRQBF5UX9xaPKi/uLUtFAEXlRf3Fo8qL+4tS0UAReVF/cWjyov7i1LRQBFsX+5RsX+5UtFACbV9KNq+lLRQB//9D9+k+6KdTE+5T6ACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKAP/R/fiP/VrUlRx/6takoAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooA//0v34j/1a1JUcf+rWpKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKAP/9P9+I/9WtSVHH/q1qSgAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigD//U/fiP/VrUlRx/6takoAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKK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igAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKAPyi/wCCxv8AyabZf9jLYf8Aom4r+fz9jD/k634Wf9h+z/8AQ6/oD/4LG/8AJptl/wBjLYf+ibiv5/P2MP8Ak634Wf8AYfs//Q6AP7YKKKKACiiigAooooAKKKKACiiigAooooAKKKKAP//Q/fiP/VrUlRx/6takoAKKKKACiiigAooooAKKKKACiiigAooooA/i+/bx/wCTwPiv/wBhy5r9w/8Agi//AMmyeIf+xluf/Sa3r8PP28f+TwPiv/2HLmv3D/4Iv/8AJsniH/sZbn/0mt6AP1+ooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigD8ov8Agsb/AMmm2X/Yy2H/AKJuK/n8/Yw/5Ot+Fn/Yfs//AEOv6A/+Cxv/ACabZf8AYy2H/om4r+fz9jD/AJOt+Fn/AGH7P/0OgD+2CiiigAooooAKKKKACiiigAooooAKKKKACiiigD//0f34j/1a1JUcf+rWpKACiiigAooooAKKKKACiiigAooooAKKKKAP4vv28f8Ak8D4r/8AYcua/cP/AIIv/wDJsniH/sZbn/0mt6/Dz9vH/k8D4r/9hy5r9w/+CL//ACbJ4h/7GW5/9JregD9fqKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooA/KL/AILG/wDJptl/2Mth/wCibiv5/P2MP+TrfhZ/2H7P/wBDr+gP/gsb/wAmm2X/AGMth/6JuK/n8/Yw/wCTrfhZ/wBh+z/9DoA/tgooooAKKKKACiiigAooooAKKKKACiiigAooooA//9L9+I/9WtSVHH/q1qSgAooooAKKKKACiiigAooooAKKKKACiiigD+L79vH/AJPA+K//AGHLmv3D/wCCL/8AybJ4h/7GW5/9Jrevw8/bx/5PA+K//Ycua/cP/gi//wAmyeIf+xluf/Sa3oA/X6iiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKAPyi/wCCxv8AyabZf9jLYf8Aom4r+fz9jD/k634Wf9h+z/8AQ6/oD/4LG/8AJptl/wBjLYf+ibiv5/P2MP8Ak634Wf8AYfs//Q6AP7YKKKKACiiigAooooAKKKKACiiigAooooAKKKKAP//T/fiP/VrUlRx/6takoAKKKKACiiigAooooAKKKKACiiigAooooA/i+/bx/wCTwPiv/wBhy5r9w/8Agi//AMmyeIf+xluf/Sa3r8PP28f+TwPiv/2HLmv3D/4Iv/8AJsniH/sZbn/0mt6AP1+ooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigD8ov8Agsb/AMmm2X/Yy2H/AKJuK/n8/Yw/5Ot+Fn/Yfs//AEOv6A/+Cxv/ACabZf8AYy2H/om4r+fz9jD/AJOt+Fn/AGH7P/0OgD+2CiiigAooooAKKKKACiiigAooooAKKKKACiiigD//1P34j/1a1JUcf+rWpKACiiigAooooAKKKKACiiigAooooAKKKKAP4vv28f8Ak8D4r/8AYcua/cP/AIIv/wDJsniH/sZbn/0mt6/Dz9vH/k8D4r/9hy5r9w/+CL//ACbJ4h/7GW5/9JregD9fqKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooA/KL/AILG/wDJptl/2Mth/wCibiv5/P2MP+TrfhZ/2H7P/wBDr+gP/gsb/wAmm2X/AGMth/6JuK/n8/Yw/wCTrfhZ/wBh+z/9DoA/tgooooAKKKKACiiigAooooAKKKKACiiigAooooA//9X9+I/9WtSVHH/q1qSgAooooAKKKKACiiigAooooAKKKKACiiigD+L79vH/AJPA+K//AGHLmv3D/wCCL/8AybJ4h/7GW5/9Jrevw8/bx/5PA+K//Ycua/cP/gi//wAmyeIf+xluf/Sa3oA/X6iiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKAPyi/wCCxv8AyabZf9jLYf8Aom4r+fz9jD/k634Wf9h+z/8AQ6/oD/4LG/8AJptl/wBjLYf+ibiv5/P2MP8Ak634Wf8AYfs//Q6AP7YKKKKACiiigAooooAKKKKACiiigAooooAKKKKAP//W/fiP/VrUlRx/6takoAKKKKACiiigAooooAKKKKACiiigAooooA/i+/bx/wCTwPiv/wBhy5r9w/8Agi//AMmyeIf+xluf/Sa3r8PP28f+TwPiv/2HLmv3D/4Iv/8AJsniH/sZbn/0mt6AP1+ooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigD8ov8Agsb/AMmm2X/Yy2H/AKJuK/n8/Yw/5Ot+Fn/Yfs//AEOv6A/+Cxv/ACabZf8AYy2H/om4r+fz9jD/AJOt+Fn/AGH7P/0OgD+2CiiigAooooAKKKKACiiigAooooAKKKKACiiigD//1/34j/1a1JUcf+rWpKACiiigAooooAKKKKACiiigAooooAKKKKAP4vv28f8Ak8D4r/8AYcua/cP/AIIv/wDJsniH/sZbn/0mt6/Dz9vH/k8D4r/9hy5r9w/+CL//ACbJ4h/7GW5/9JregD9fqKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooA/KL/AILG/wDJptl/2Mth/wCibiv5/P2MP+TrfhZ/2H7P/wBDr+gP/gsb/wAmm2X/AGMth/6JuK/n8/Yw/wCTrfhZ/wBh+z/9DoA/tgooooAKKKKACiiigAooooAKKKKACiiigAooooA//9D9+I/9WtSVHH/q1qSgAooooAKKKKACiiigAooooAKKKKACiiigD+L79vH/AJPA+K//AGHLmv3D/wCCL/8AybJ4h/7G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igAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKAPyi/wCCxv8AyabZf9jLYf8Aom4r+fz9jD/k634Wf9h+z/8AQ6/oD/4LG/8AJptl/wBjLYf+ibiv5/P2MP8Ak634Wf8AYfs//Q6AP7YKKKKACiiigAooooAKKKKACiiigAooooAKKKKAP//W/fiP/VrUlRx/6takoAKKKKACiiigAooooAKKKKACiiigAooooA/i+/bx/wCTwPiv/wBhy5r9w/8Agi//AMmyeIf+xluf/Sa3r8PP28f+TwPiv/2HLmv3D/4Iv/8AJsniH/sZbn/0mt6AP1+ooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigD8ov8Agsb/AMmm2X/Yy2H/AKJuK/n8/Yw/5Ot+Fn/Yfs//AEOv6A/+Cxv/ACabZf8AYy2H/om4r+fz9jD/AJOt+Fn/AGH7P/0OgD+2CiiigAooooAKKKKACiiigAooooAKKKKACiiigD//1/34j/1a1JUcf+rWpKACiiigAooooAKKKKACiiigAooooAKKKKAP4vv28f8Ak8D4r/8AYcua/cP/AIIv/wDJsniH/sZbn/0mt6/Dz9vH/k8D4r/9hy5r9w/+CL//ACbJ4h/7GW5/9JregD9fqKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooA/KL/AILG/wDJptl/2Mth/wCibiv5/P2MP+TrfhZ/2H7P/wBDr+gP/gsb/wAmm2X/AGMth/6JuK/n8/Yw/wCTrfhZ/wBh+z/9DoA/tgooooAKKKKACiiigAooooAKKKKACiiigAooooA//9D9+I/9WtSVHH/q1qSgAooooAKKKKACiiigAooooAKKKKACiiigD+L79vH/AJPA+K//AGHLmv3D/wCCL/8AybJ4h/7GW5/9Jrevw8/bx/5PA+K//Ycua/cP/gi//wAmyeIf+xluf/Sa3oA/X6iiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKAPyi/wCCxv8AyabZf9jLYf8Aom4r+fz9jD/k634Wf9h+z/8AQ6/oD/4LG/8AJptl/wBjLYf+ibiv5/P2MP8Ak634Wf8AYfs//Q6AP7YKKKKACiiigAooooAKKKKACiiigAooooAKKKKAP//R/fiP/VrUlRx/6takoAKKKKACiiigAooooAKKKKACiiigAooooA/i+/bx/wCTwPiv/wBhy5r9w/8Agi//AMmyeIf+xluf/Sa3r8PP28f+TwPiv/2HLmv3D/4Iv/8AJsniH/sZbn/0mt6AP1+ooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigD8ov8Agsb/AMmm2X/Yy2H/AKJuK/n8/Yw/5Ot+Fn/Yfs//AEOv6A/+Cxv/ACabZf8AYy2H/om4r+fz9jD/AJOt+Fn/AGH7P/0OgD+2CiiigAooooAKKKKACiiigAooooAKKKKACiiigD//0v34j/1a1JUcf+rWpKACiiigAooooAKKKKACiiigAooooAKKKKAP4vv28f8Ak8D4r/8AYcua/cP/AIIv/wDJsniH/sZbn/0mt6/Dz9vH/k8D4r/9hy5r9w/+CL//ACbJ4h/7GW5/9JregD9fqKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooA/KL/AILG/wDJptl/2Mth/wCibiv5/P2MP+TrfhZ/2H7P/wBDr+gP/gsb/wAmm2X/AGMth/6JuK/n8/Yw/wCTrfhZ/wBh+z/9DoA/tgooooAKKKKACiiigAooooAKKKKACiiigAooooA//9P9+I/9WtSVHH/q1qSgAooooAKKKKACiiigAooooAKKKKACiiigD+L79vH/AJPA+K//AGHLmv3D/wCCL/8AybJ4h/7GW5/9Jrevw8/bx/5PA+K//Ycua/cP/gi//wAmyeIf+xluf/Sa3oA/X6iiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKAPyi/wCCxv8AyabZf9jLYf8Aom4r+fz9jD/k634Wf9h+z/8AQ6/oD/4LG/8AJptl/wBjLYf+ibiv5/P2MP8Ak634Wf8AYfs//Q6AP7YKKKKACiiigAooooAKKKKACiiigAooooAKKKKAP//U/fiP/VrUlRx/6takoAKKKKACiiigAooooAKKKKACiiigAooooA/i+/bx/wCTwPiv/wBhy5r9w/8Agi//AMmyeIf+xluf/Sa3r8PP28f+TwPiv/2HLmv3D/4Iv/8AJsniH/sZbn/0mt6AP1+ooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigD8ov8Agsb/AMmm2X/Yy2H/AKJuK/n8/Yw/5Ot+Fn/Yfs//AEOv6A/+Cxv/ACabZf8AYy2H/om4r+fz9jD/AJOt+Fn/AGH7P/0OgD+2CiiigAooooAKKKKACiiigAooooAKKKKACiiigD//1f34j/1a1JUcf+rWpKACiiigAooooAKKKKACiiigAooooAKKKKAP4vv28f8Ak8D4r/8AYcua/cP/AIIv/wDJsniH/sZbn/0mt6/Dz9vH/k8D4r/9hy5r9w/+CL//ACbJ4h/7GW5/9JregD9fqKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooA/KL/AILG/wDJptl/2Mth/wCibiv5/P2MP+TrfhZ/2H7P/wBDr+gP/gsb/wAmm2X/AGMth/6JuK/n8/Yw/wCTrfhZ/wBh+z/9DoA/tgooooAKKKKACiiigAooooAKKKKACiiigAooooA//9b9+I/9WtSVHH/q1qSgAooooAKKKKACiiigAooooAKKKKACiiigD+L79vH/AJPA+K//AGHLmv3D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47X9g1FAH8fP/Ds39tH/AKJ+/wD4GWn/AMdo/wCHZv7aP/RP3/8AAy0/+O1/YNRQB/Hz/wAOzf20f+ifv/4GWn/x2j/h2b+2j/0T9/8AwMtP/jtf2DUUAfx8/wDDs39tH/on7/8AgZaf/HaP+HZv7aP/AET9/wDwMtP/AI7X9g1FAH8fP/Ds39tH/on7/wDgZaf/AB2j/h2b+2j/ANE/f/wMtP8A47X9g1FAH8fP/Ds39tH/AKJ+/wD4GWn/AMdo/wCHZv7aP/RP3/8AAy0/+O1/YNRQB/Hz/wAOzf20f+ifv/4GWn/x2j/h2b+2j/0T9/8AwMtP/jtf2DUUAfx8/wDDs39tH/on7/8AgZaf/HaP+HZv7aP/AET9/wDwMtP/AI7X9g1FAH8fP/Ds39tH/on7/wDgZaf/AB2j/h2b+2j/ANE/f/wMtP8A47X9g1FAH8fP/Ds39tH/AKJ+/wD4GWn/AMdr3b9mT/gn/wDtZeAf2g/AHjTxX4Hey0fR9Ztri6m+1Wz7IUf532JNv6V/UhRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAf/0P34j/1a1JUcf+rWpKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKAP/9H9+I/9WtSVHH/q1qSgAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigD//S/fiP/VrUlRx/6takoAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooA//0/34j/1a1JTE+5T6ACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKAP/U/fpPuinU1PuinUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAf/9X9+k+6KdRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQB//1v38ooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooA//Z" alt="IBG Legal">
+    <div class="sub">Panel de Operaciones</div>
+  </div>
+  <nav aria-label="Navegación principal">
+    <div class="ns">Principal</div>
+    <button class="on" onclick="go('dash')" id="n-dash"><span class="ni">◈</span> Dashboard</button>
+    <button onclick="go('drive')" id="n-drive"><span class="ni">◉</span> Accesos Drive</button>
+    <div class="ns">Operaciones</div>
+    <button onclick="go('equipo')" id="n-equipo"><span class="ni">◎</span> Equipo</button>
+    <button onclick="go('clientes')" id="n-clientes"><span class="ni">◉</span> Clientes</button>
+    <div class="ns">Recursos</div>
+    <button onclick="go('ia')" id="n-ia"><span class="ni">◉</span> Herramientas IA</button>
+    <button onclick="go('plat')" id="n-plat"><span class="ni">◎</span> Plataformas</button>
+    <button onclick="go('serv')" id="n-serv"><span class="ni">◉</span> Servicios</button>
+    <button onclick="go('mun')" id="n-mun"><span class="ni">◈</span> Trámites Municipales</button>
+  </nav>
+  <div id="sb-user">
+    <div class="av" style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1)">EBG</div>
+    <div><div class="un">Benet</div><div class="ur">info@ibg.legal</div></div>
+  </div>
+</div>
+<div id="main" role="main">
+
+<!-- DASHBOARD -->
+<div class="view on" id="v-dash">
+  <div style="margin-bottom:28px;">
+    <div class="pt">Panel de <span>Operaciones</span></div>
+    <div class="ps">IBG Legal · info@ibg.legal · Cancún, Q. Roo</div>
+  </div>
+
+  <div class="st">Revisión Diaria</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:28px;">
+    <a href="https://docs.google.com/spreadsheets/d/1NV2o1TymmNFZFugLvjbYpUY9A0Y6vL5c/edit?usp=sharing&ouid=111529707323437758271&rtpof=true&sd=true" target="_blank" class="lc" style="border-left:2px solid var(--gold);background:var(--blk);grid-column:1/-1;">
+      <span class="lci" style="font-size:16px;opacity:.7;">⚖️</span><div><div class="lcn" style="color:rgba(255,255,255,.9);font-weight:400;letter-spacing:.5px;">Control de Litigios</div><div class="lcd" style="color:rgba(255,255,255,.35);">Seguimiento diario · Expedientes activos · Términos</div></div>
+      <span class="lct" style="background:var(--gold);color:var(--blk);font-weight:500;">Diario</span>
+    </a>
+    <a href="https://www.tsjqroo.gob.mx/" target="_blank" class="lc alerta">
+      <span class="lci">🏛</span><div><div class="lcn">Boletín Judicial TSJQR</div><div class="lcd">Carmen + Miguel por separado</div></div>
+      <span class="lct" style="background:var(--red)">Diario</span>
+    </a>
+    <a href="https://buholegal.com" target="_blank" class="lc">
+      <span class="lci">🦉</span><div><div class="lcn">Búho Legal</div><div class="lcd">Monitoreo de expedientes</div></div>
+      <span class="lct" style="background:var(--forest)">↗</span>
+    </a>
+  </div>
+
+  <div class="st">Google Workspace</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;">
+    <a href="https://calendar.google.com/calendar/u/0/r?authuser=info@ibg.legal" target="_blank" class="lc" style="border-left:3px solid #4285F4">
+      <span class="lci">📅</span><div><div class="lcn">Calendar</div><div class="lcd">Agenda · Términos</div></div>
+    </a>
+    <a href="https://mail.google.com/mail/u/0/?authuser=info@ibg.legal" target="_blank" class="lc" style="border-left:3px solid #EA4335">
+      <span class="lci">📧</span><div><div class="lcn">Gmail</div><div class="lcd">info@ibg.legal</div></div>
+    </a>
+    <a href="https://tasks.google.com" target="_blank" class="lc" style="border-left:3px solid var(--green)">
+      <span class="lci">✅</span><div><div class="lcn">Tasks</div><div class="lcd">Tareas por proyecto</div></div>
+    </a>
+    <a href="https://drive.google.com/drive/u/0/?authuser=info@ibg.legal" target="_blank" class="lc" style="border-left:3px solid #4285F4">
+      <span class="lci">📂</span><div><div class="lcn">Drive</div><div class="lcd">Archivos y expedientes</div></div>
+    </a>
+  </div>
+</div>
+
+<!-- DRIVE -->
+<div class="view" id="v-drive">
+  <div class="pt">Accesos <span>Drive</span></div>
+  <div class="ps">Google Workspace · info@ibg.legal</div>
+
+  <div class="st">Gestión del Despacho</div>
+  <div class="g2" style="margin-bottom:22px;">
+    <a href="https://docs.google.com/spreadsheets/d/1Zt8Q_ZL_s14BQDIX21sbOAiD5mAFYzQfR3iDTa1xgqA/edit#gid=937937455" target="_blank" class="lc" style="border-left:3px solid var(--orange)"><span class="lci">💰</span><div><div class="lcn">Finanzas 2026</div><div class="lcd">Facturación · Adeudos · Cobranza · Eduardo Mancera</div></div><span class="lct" style="background:var(--orange)">Drive</span></a>
+    <a href="https://docs.google.com/spreadsheets/d/1Zt8Q_ZL_s14BQDIX21sbOAiD5mAFYzQfR3iDTa1xgqA/edit#gid=1423600337" target="_blank" class="lc" style="border-left:3px solid var(--forest)"><span class="lci">🤝</span><div><div class="lcn">CRM & Operaciones</div><div class="lcd">71 clientes · Leads activos · Pipeline</div></div><span class="lct" style="background:var(--forest)">Drive</span></a>
+  </div>
+
+  <div class="st">Documentos Internos</div>
+  <div class="g2" style="margin-bottom:22px;">
+    <a href="https://docs.google.com/document/d/1EfGHPT7Oe8B2pITIVSOyBw_nNTZGbvrZ/edit" target="_blank" class="lc"><span class="lci">🛠</span><div><div class="lcn">Propuestas Google Workspace</div><div class="lcd">Evaluación de herramientas del ecosistema Google para IBG Legal · Feb 2026</div></div><span class="lct" style="background:var(--forest)">Drive</span></a>
+  </div>
+
+  <div class="st">Google Workspace — info@ibg.legal</div>
+  <div class="g3">
+    <a href="https://drive.google.com/drive/u/0/?authuser=info@ibg.legal" target="_blank" class="lc"><span class="lci">📂</span><div><div class="lcn">Google Drive</div><div class="lcd">Todos los archivos y expedientes</div></div><span class="lct" style="background:#4285F4">Google</span></a>
+    <a href="https://calendar.google.com/calendar/u/0/r?authuser=info@ibg.legal" target="_blank" class="lc"><span class="lci">📅</span><div><div class="lcn">Google Calendar</div><div class="lcd">Agenda · Términos · Alertas</div></div><span class="lct" style="background:#4285F4">Google</span></a>
+    <a href="https://mail.google.com/mail/u/0/?authuser=info@ibg.legal" target="_blank" class="lc"><span class="lci">📧</span><div><div class="lcn">Gmail IBG</div><div class="lcd">info@ibg.legal</div></div><span class="lct" style="background:#EA4335">Google</span></a>
+    <a href="https://notebooklm.google.com/?authuser=info@ibg.legal" target="_blank" class="lc"><span class="lci">📓</span><div><div class="lcn">Notebook LM</div><div class="lcd">Resúmenes por expediente · Aprobación Sofi + Yéssica</div></div><span class="lct" style="background:#4285F4">Google</span></a>
+    <a href="https://docs.google.com/?authuser=info@ibg.legal" target="_blank" class="lc"><span class="lci">📄</span><div><div class="lcn">Google Docs</div><div class="lcd">Escritos · Memorandos · Documentos</div></div><span class="lct" style="background:#4285F4">Google</span></a>
+    <a href="https://contacts.google.com/?authuser=info@ibg.legal" target="_blank" class="lc"><span class="lci">👤</span><div><div class="lcn">Contactos Google</div><div class="lcd">Directorio de clientes y colaboradores</div></div><span class="lct" style="background:#4285F4">Google</span></a>
+  </div>
+</div>
+
+<!-- EQUIPO -->
+<div class="view" id="v-equipo">
+  <div class="pt">Equipo <span>IBG Legal</span></div>
+  <div class="ps">Directorio operativo · Cancún · CDMX · Red externa</div>
+  <div class="st">Equipo Interno</div>
+  <div class="g3" style="margin-bottom:24px;">
+    <div class="csm tc"><div class="av" style="background:#323833">YR</div><div><div class="tn">Yéssica Regalado</div><div class="tr">Directora Operativa</div></div></div>
+    <div class="csm tc"><div class="av" style="background:#323833">GA</div><div><div class="tn">Gabriela Aparicio</div><div class="tr">Abogada · Litigio</div></div></div>
+    <div class="csm tc"><div class="av" style="background:#323833">SR</div><div><div class="tn">Sofía Rangel</div><div class="tr">Abogada · Litigio / Corp CDMX</div></div></div>
+    <div class="csm tc"><div class="av" style="background:#3F7652">B</div><div><div class="tn">Brenda Salas</div><div class="tr">Expedientes · Campo</div></div></div>
+    <div class="csm tc"><div class="av" style="background:#3F7652">M</div><div><div class="tn">Miguel</div><div class="tr">Abogado Legal-Operativo</div></div></div>
+    <div class="csm tc"><div class="av" style="background:#5A6660">EM</div><div><div class="tn">Eduardo Mancera</div><div class="tr">C.P. · Finanzas</div></div></div>
+    <div class="csm tc"><div class="av" style="background:#5A6660">FV</div><div><div class="tn">Fernanda Villa</div><div class="tr">Administrativa · Operación · Leads</div></div></div>
+    <div class="csm tc"><div class="av" style="background:#323833">C</div><div><div class="tn">Carmen Fdez.</div><div class="tr">Soporte · CDMX</div></div></div>
+    <div class="csm tc"><div class="av" style="background:#323833">FR</div><div><div class="tn">Filiberto Rangel</div><div class="tr">Asistente · Chofer</div></div></div>
+  </div>
+  <div class="st">Colaboradores Externos</div>
+  <div class="g3" style="margin-bottom:24px;">
+    <div class="csm" style="display:flex;align-items:center;gap:10px;border-style:dashed;"><div style="width:7px;height:7px;border-radius:50%;background:var(--forest);flex-shrink:0;"></div><div style="flex:1;min-width:0;"><div style="font-size:12px;font-weight:600;color:var(--ink);">Yuni Díaz de León</div><div style="font-size:10px;color:var(--mid);">Asambleas corporativas</div></div><span class="badge" style="background:var(--forest)">Corporativo</span></div>
+    <div class="csm" style="display:flex;align-items:center;gap:10px;border-style:dashed;"><div style="width:7px;height:7px;border-radius:50%;background:var(--forest);flex-shrink:0;"></div><div style="flex:1;min-width:0;"><div style="font-size:12px;font-weight:600;color:var(--ink);">Emiliano</div><div style="font-size:10px;color:var(--mid);">Digital · Web · Ads</div></div><span class="badge" style="background:var(--forest)">Digital</span></div>
+    <div class="csm" style="display:flex;align-items:center;gap:10px;border-style:dashed;"><div style="width:7px;height:7px;border-radius:50%;background:var(--forest);flex-shrink:0;"></div><div style="flex:1;min-width:0;"><div style="font-size:12px;font-weight:600;color:var(--ink);">Juan Alberto Bermejo</div><div style="font-size:10px;color:var(--mid);">Defensa penal</div></div><span class="badge" style="background:var(--forest)">Penal</span></div>
+    <div class="csm" style="display:flex;align-items:center;gap:10px;border-style:dashed;"><div style="width:7px;height:7px;border-radius:50%;background:var(--forest);flex-shrink:0;"></div><div style="flex:1;min-width:0;"><div style="font-size:12px;font-weight:600;color:var(--ink);">Concepción / J.L. Tuz</div><div style="font-size:10px;color:var(--mid);">Trámites migratorios INM</div></div><span class="badge" style="background:var(--forest)">Migración</span></div>
+    <div class="csm" style="display:flex;align-items:center;gap:10px;border-style:dashed;"><div style="width:7px;height:7px;border-radius:50%;background:var(--forest);flex-shrink:0;"></div><div style="flex:1;min-width:0;"><div style="font-size:12px;font-weight:600;color:var(--ink);">Iván Canut</div><div style="font-size:10px;color:var(--mid);">Despacho asociado Querétaro</div></div><span class="badge" style="background:var(--forest)">Querétaro</span></div>
+    <div class="csm" style="display:flex;align-items:center;gap:10px;border-style:dashed;"><div style="width:7px;height:7px;border-radius:50%;background:var(--forest);flex-shrink:0;"></div><div style="flex:1;min-width:0;"><div style="font-size:12px;font-weight:600;color:var(--ink);">Mauricio / Ernesto R.</div><div style="font-size:10px;color:var(--mid);">Despacho asociado CDMX</div></div><span class="badge" style="background:var(--forest)">CDMX</span></div>
+  </div>
+  <div class="st">Notarios — Quintana Roo</div>
+  <div style="display:flex;gap:10px;">
+    <div class="csm" style="flex:1;text-align:center;"><div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;color:var(--forest);margin-bottom:4px;">⚖</div><div style="font-family:'Cormorant Garamond',serif;font-size:14px;font-weight:700;">Luis Pola</div><div style="font-size:9.5px;color:var(--forest);font-weight:600;text-transform:uppercase;letter-spacing:.4px;margin-top:3px;">Cancún</div></div>
+    <div class="csm" style="flex:1;text-align:center;"><div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;color:var(--forest);margin-bottom:4px;">⚖</div><div style="font-family:'Cormorant Garamond',serif;font-size:14px;font-weight:700;">Patricio Martin</div><div style="font-size:9.5px;color:var(--forest);font-weight:600;text-transform:uppercase;letter-spacing:.4px;margin-top:3px;">Kantunilkín</div></div>
+    <div class="csm" style="flex:1;text-align:center;"><div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;color:var(--forest);margin-bottom:4px;">⚖</div><div style="font-family:'Cormorant Garamond',serif;font-size:14px;font-weight:700;">Isaías Ramírez</div><div style="font-size:9.5px;color:var(--forest);font-weight:600;text-transform:uppercase;letter-spacing:.4px;margin-top:3px;">Playa del Carmen</div></div>
+  </div>
+</div>
+
+<!-- CLIENTES -->
+<div class="view" id="v-clientes">
+  <div class="pt">Clientes <span>IBG Legal</span></div>
+  <div class="ps">Directorio de clientes activos, inactivos y nuevos · info@ibg.legal</div>
+  <div class="al-blk"><strong style="color:var(--gold)">ℹ Datos bancarios — </strong>Isla Business Group, S.A. de C.V. · RFC: IBG130606GV5 · Santander Cuenta: 6550398181-9 · CLABE: 014691655039818194 · SWIFT: BMSXMXMMXXX</div>
+  <div class="g3" style="margin-bottom:22px;">
+    <a href="https://www.santander.com.mx/bei/home/bancaElectronica.html" target="_blank" class="lc" style="border-left:3px solid #EC0000"><span class="lci">🏦</span><div><div class="lcn">Santander — Banca Electrónica</div><div class="lcd">Cuenta MXN · Transferencias · Movimientos</div></div><span class="lct" style="background:#EC0000">↗</span></a>
+    <a href="https://dashboard.stripe.com/acct_1P6COkP2d8WnuTKP/dashboard" target="_blank" class="lc" style="border-left:3px solid #635BFF"><span class="lci">💳</span><div><div class="lcn">Stripe — Links de Pago</div><div class="lcd">Dashboard de transacciones · Cobros a clientes</div></div><span class="lct" style="background:#635BFF">↗</span></a>
+    <a href="https://docs.google.com/spreadsheets/d/1Zt8Q_ZL_s14BQDIX21sbOAiD5mAFYzQfR3iDTa1xgqA/edit#gid=1423600337" target="_blank" class="lc" style="border-left:3px solid var(--forest)"><span class="lci">🤝</span><div><div class="lcn">CRM & Operaciones</div><div class="lcd">71 clientes · Leads activos · Pipeline</div></div><span class="lct" style="background:var(--forest)">↗</span></a>
+  </div>
+</div>
+
+<!-- IA -->
+<div class="view" id="v-ia">
+  <div class="pt">Herramientas <span>de IA</span></div>
+  <div class="ps">Plataformas de inteligencia artificial · IBG Legal</div>
+  <div class="g3">
+    <a href="https://claude.ai" target="_blank" class="lc" style="border-left:4px solid #C4740A"><span class="lci">🤖</span><div style="flex:1;min-width:0;"><div class="lcn">Claude</div><div class="lcd">Redacción legal, análisis y automatización interna.</div></div><span class="lct" style="background:#C4740A">Principal</span></a>
+    <a href="https://www.perplexity.ai" target="_blank" class="lc" style="border-left:4px solid #1F6FEB"><span class="lci">🔎</span><div style="flex:1;min-width:0;"><div class="lcn">Perplexity</div><div class="lcd">Investigación legal, jurisprudencia y noticias recientes.</div></div><span class="lct" style="background:#1F6FEB">Investigación</span></a>
+    <a href="https://chatgpt.com" target="_blank" class="lc" style="border-left:4px solid #0D9068"><span class="lci">💬</span><div style="flex:1;min-width:0;"><div class="lcn">ChatGPT</div><div class="lcd">Consultas y redacción complementaria.</div></div><span class="lct" style="background:#0D9068">Complementario</span></a>
+    <a href="https://notebooklm.google.com" target="_blank" class="lc" style="border-left:4px solid #4285F4"><span class="lci">📓</span><div style="flex:1;min-width:0;"><div class="lcn">Notebook LM</div><div class="lcd">Resúmenes por cliente. Aprobación Sofía + Yéssica antes de usar.</div></div><span class="lct" style="background:#4285F4">Expedientes</span></a>
+    <a href="https://gemini.google.com" target="_blank" class="lc" style="border-left:4px solid #7C3AED"><span class="lci">✨</span><div style="flex:1;min-width:0;"><div class="lcn">Gemini</div><div class="lcd">Consultas integradas con Google Workspace.</div></div><span class="lct" style="background:#7C3AED">Google</span></a>
+    <a href="https://buholegal.com" target="_blank" class="lc" style="border-left:4px solid #323833"><span class="lci">🦉</span><div style="flex:1;min-width:0;"><div class="lcn">Búho Legal</div><div class="lcd">Monitoreo digital de expedientes. Complementa boletines manuales — no los sustituye.</div></div><span class="lct" style="background:#323833">Tribunales</span></a>
+    <a href="https://lawzana.com" target="_blank" class="lc" style="border-left:4px solid #8B6F47"><span class="lci">⚖</span><div style="flex:1;min-width:0;"><div class="lcn">Lawzana</div><div class="lcd">Captación de leads migratorios. Recibe directamente Fernanda Villa.</div></div><span class="lct" style="background:#8B6F47">Leads</span></a>
+  </div>
+</div>
+
+<!-- PLATAFORMAS -->
+<div class="view" id="v-plat">
+  <div class="pt">Plataformas <span>Legales y Banca</span></div>
+  <div class="ps">Accesos directos por jurisdicción · Banca y pagos · info@ibg.legal</div>
+
+  <div style="margin-bottom:22px;"><div class="st">Quintana Roo — Jurisdiccional</div><div class="g3">
+    <a href="https://www.tsjqroo.gob.mx/" target="_blank" class="lc alerta"><span class="lci">🏛</span><div style="flex:1;min-width:0;"><div class="lcn">TSJQR — Boletín Judicial</div><div class="lcd">Revisión diaria obligatoria. Carmen + Miguel por separado.</div></div><span class="lct" style="background:var(--red)">DIARIO</span></a>
+    <a href="https://tribunalelectronico.tsjqroo.gob.mx/Account/Index?ReturnUrl=%2F" target="_blank" class="lc"><span class="lci">🔐</span><div style="flex:1;min-width:0;"><div class="lcn">TSJQR — Tribunal Electrónico</div><div class="lcd">Login con firma electrónica. Acceso al expediente electrónico primera y segunda instancia.</div></div><span class="lct" style="background:var(--forest)">Expedientes</span></a>
+    <a href="https://gestionchetumal.tsjqroo.gob.mx/sentenciaspublicas/Home/Consultas?id=18" target="_blank" class="lc"><span class="lci">📄</span><div style="flex:1;min-width:0;"><div class="lcn">TSJQR — Sentencias Públicas</div><div class="lcd">Versiones públicas de sentencias del Poder Judicial de Quintana Roo.</div></div><span class="lct" style="background:var(--forest)">Sentencias</span></a>
+    <a href="https://www.tribunalesunitarios.gob.mx/pagina_tsa/acuerdos_tuas.cfm" target="_blank" class="lc"><span class="lci">🌾</span><div style="flex:1;min-width:0;"><div class="lcn">Tribunales Agrarios — Acuerdos TUA</div><div class="lcd">Acuerdos Tribunales Unitarios Agrarios. Relevante para Laguna Azul.</div></div><span class="lct" style="background:var(--forest)">Agrario</span></a>
+  </div></div>
+
+  <div style="margin-bottom:22px;"><div class="st">CDMX — Jurisdiccional</div><div class="g3">
+    <a href="https://seguimientomitribunal.poderjudicialcdmx.gob.mx/" target="_blank" class="lc"><span class="lci">🔍</span><div style="flex:1;min-width:0;"><div class="lcn">TSJCDMX — Seguimiento Expedientes</div><div class="lcd">Consulta directa de expedientes y exhortos. Mi Tribunal — CNPCF.</div></div><span class="lct" style="background:var(--forest)">Directo</span></a>
+    <a href="https://opv.poderjudicialcdmx.gob.mx/opv/" target="_blank" class="lc"><span class="lci">📨</span><div style="flex:1;min-width:0;"><div class="lcn">TSJCDMX — Oficialía Virtual (OPV)</div><div class="lcd">Presentación de demandas y promociones en línea con firma electrónica.</div></div><span class="lct" style="background:var(--forest)">Promociones</span></a>
+    <a href="https://sicor.poderjudicialdf.gob.mx/BusquedaExpediente.php" target="_blank" class="lc"><span class="lci">📋</span><div style="flex:1;min-width:0;"><div class="lcn">TSJCDMX — SICOR</div><div class="lcd">Búsqueda por expediente en boletín judicial. Solo informativo, sin efecto legal.</div></div><span class="lct" style="background:var(--forest)">Boletín</span></a>
+    <a href="https://www.poderjudicialcdmx.gob.mx/" target="_blank" class="lc"><span class="lci">🏛</span><div style="flex:1;min-width:0;"><div class="lcn">TSJCDMX — Portal</div><div class="lcd">Portal principal del Tribunal Superior de Justicia de la Ciudad de México.</div></div><span class="lct" style="background:var(--forest)">CDMX</span></a>
+  </div></div>
+
+  <div style="margin-bottom:22px;"><div class="st">Sinaloa — Jurisdiccional</div><div class="g3">
+    <a href="https://etribunal.stj-sin.gob.mx/" target="_blank" class="lc"><span class="lci">🔐</span><div style="flex:1;min-width:0;"><div class="lcn">STJ Sinaloa — Tribunal Electrónico</div><div class="lcd">Consulta expedientes y envío de promociones con cuenta registrada. Culiacán.</div></div><span class="lct" style="background:var(--forest)">Login</span></a>
+    <a href="https://www.stj-sin.gob.mx/serviciosenlinea/boletinjudicial" target="_blank" class="lc"><span class="lci">📋</span><div style="flex:1;min-width:0;"><div class="lcn">STJ Sinaloa — Boletín Judicial</div><div class="lcd">Acuerdos y lista de publicaciones del Supremo Tribunal de Justicia de Sinaloa.</div></div><span class="lct" style="background:var(--forest)">Boletín</span></a>
+    <a href="https://www.stj-sin.gob.mx/" target="_blank" class="lc"><span class="lci">🏛</span><div style="flex:1;min-width:0;"><div class="lcn">STJ Sinaloa — Portal</div><div class="lcd">Portal del Supremo Tribunal de Justicia del Estado de Sinaloa.</div></div><span class="lct" style="background:var(--forest)">Sinaloa</span></a>
+  </div></div>
+
+  <div style="margin-bottom:22px;"><div class="st">Quintana Roo — Registro Público</div><div class="g3">
+    <a href="https://rppc.qroo.gob.mx/" target="_blank" class="lc"><span class="lci">📌</span><div style="flex:1;min-width:0;"><div class="lcn">RPPC — Registro Público QRoo</div><div class="lcd">Folios reales, comercio y personas morales. Portal ciudadano activo.</div></div><span class="lct" style="background:var(--forest)">RPPC</span></a>
+    <a href="https://www.benito-juarez.gob.mx" target="_blank" class="lc"><span class="lci">🗺</span><div style="flex:1;min-width:0;"><div class="lcn">Catastro — Benito Juárez (Cancún)</div><div class="lcd">Portal municipal. Sección de catastro y predial.</div></div><span class="lct" style="background:var(--forest)">Cancún</span></a>
+    <a href="https://solidaridad.gob.mx" target="_blank" class="lc"><span class="lci">🗺</span><div style="flex:1;min-width:0;"><div class="lcn">Catastro — Solidaridad (PDC/PA)</div><div class="lcd">Portal municipal. Playa del Carmen y Puerto Aventuras.</div></div><span class="lct" style="background:var(--forest)">PDC / PA</span></a>
+    <a href="https://tulum.gob.mx" target="_blank" class="lc"><span class="lci">🗺</span><div style="flex:1;min-width:0;"><div class="lcn">Catastro — Tulum</div><div class="lcd">Municipio constituido 2021. Consulta en portal o presencial.</div></div><span class="lct" style="background:var(--forest)">Tulum</span></a>
+    <a href="https://islamujeres.gob.mx" target="_blank" class="lc"><span class="lci">🗺</span><div style="flex:1;min-width:0;"><div class="lcn">Catastro — Isla Mujeres</div><div class="lcd">Municipal. Relevante para IRKON/Magogon.</div></div><span class="lct" style="background:var(--forest)">Isla Muj.</span></a>
+    <a href="https://cozumel.gob.mx" target="_blank" class="lc"><span class="lci">🗺</span><div style="flex:1;min-width:0;"><div class="lcn">Catastro — Cozumel</div><div class="lcd">Portal municipal de Cozumel.</div></div><span class="lct" style="background:var(--forest)">Cozumel</span></a>
+  </div></div>
+
+  <div style="margin-bottom:22px;"><div class="st">Quintana Roo — Gobierno Estatal</div><div class="g3">
+    <a href="https://sema.qroo.gob.mx" target="_blank" class="lc"><span class="lci">🌊</span><div style="flex:1;min-width:0;"><div class="lcn">SEMA — Ecología QRoo</div><div class="lcd">MIA locales, manglar, ZOFEMAT estatal, autorizaciones ambientales.</div></div><span class="lct" style="background:var(--forest)">Ambiental</span></a>
+    <a href="https://sedetur.qroo.gob.mx" target="_blank" class="lc"><span class="lci">🏨</span><div style="flex:1;min-width:0;"><div class="lcn">SEDETUR — Turismo QRoo</div><div class="lcd">Registros y permisos de establecimientos hoteleros.</div></div><span class="lct" style="background:var(--forest)">Turismo</span></a>
+    <a href="https://www.gob.mx/sedatu" target="_blank" class="lc"><span class="lci">🌊</span><div style="flex:1;min-width:0;"><div class="lcn">SEDATU / ZOFEMAT federal</div><div class="lcd">Concesiones zona federal marítimo terrestre. Brad Peik, OB.</div></div><span class="lct" style="background:var(--forest)">ZOFEMAT</span></a>
+    <a href="https://phina.ran.gob.mx" target="_blank" class="lc"><span class="lci">🌾</span><div style="flex:1;min-width:0;"><div class="lcn">RAN — Padrón e Historia (PHINA)</div><div class="lcd">Registro Agrario Nacional. Esencial para Laguna Azul.</div></div><span class="lct" style="background:var(--forest)">Agrario</span></a>
+  </div></div>
+
+  <div style="margin-bottom:22px;"><div class="st">Federal — Jurisdiccional</div><div class="g3">
+    <a href="https://www.scjn.gob.mx/consultas" target="_blank" class="lc"><span class="lci">🏛</span><div style="flex:1;min-width:0;"><div class="lcn">SCJN — Consulta Expedientes</div><div class="lcd">Suprema Corte. Amparos y recursos constitucionales.</div></div><span class="lct" style="background:var(--forest)">SCJN</span></a>
+    <a href="https://www.cjf.gob.mx/servicios/expediente.htm" target="_blank" class="lc"><span class="lci">⚖</span><div style="flex:1;min-width:0;"><div class="lcn">CJF — Juzgados Federales</div><div class="lcd">Poder Judicial Federal. Amparos indirectos y directos.</div></div><span class="lct" style="background:var(--forest)">Federal</span></a>
+    <a href="https://www.serviciosenlinea.pjf.gob.mx/juicioenlinea/Home/Login" target="_blank" class="lc"><span class="lci">🔐</span><div style="flex:1;min-width:0;"><div class="lcn">PJF — Juicio en Línea (Login)</div><div class="lcd">Acceso directo con firma electrónica. Amparos, juicios orales y mercantiles federales.</div></div><span class="lct" style="background:var(--forest)">Login</span></a>
+    <a href="https://www.serviciosenlinea.pjf.gob.mx/juicioenlinea" target="_blank" class="lc"><span class="lci">⚖</span><div style="flex:1;min-width:0;"><div class="lcn">PJF — Servicios en Línea</div><div class="lcd">Portal de Servicios en Línea del Poder Judicial de la Federación.</div></div><span class="lct" style="background:var(--forest)">Federal</span></a>
+    <a href="https://www.tfja.gob.mx" target="_blank" class="lc"><span class="lci">📋</span><div style="flex:1;min-width:0;"><div class="lcn">TFJA — Juicios Administrativos</div><div class="lcd">Tribunal Federal Justicia Administrativa. LLORENTE.</div></div><span class="lct" style="background:var(--forest)">Fiscal</span></a>
+  </div></div>
+
+  <div style="margin-bottom:22px;"><div class="st">Federal — Administrativo y Fiscal</div><div class="g3">
+    <a href="https://www.sat.gob.mx" target="_blank" class="lc"><span class="lci">💼</span><div style="flex:1;min-width:0;"><div class="lcn">SAT — Portal de Servicios</div><div class="lcd">RFC, e.firma, declaraciones, CFDI, buzón tributario.</div></div><span class="lct" style="background:var(--forest)">SAT</span></a>
+    <a href="https://www.imss.gob.mx/patrones" target="_blank" class="lc"><span class="lci">🏥</span><div style="flex:1;min-width:0;"><div class="lcn">IMSS — Portal Empresarial</div><div class="lcd">SUA, obligaciones patronales. Relevante IRKON tercer pago.</div></div><span class="lct" style="background:var(--forest)">IMSS</span></a>
+    <a href="https://www.inm.gob.mx" target="_blank" class="lc"><span class="lci">✈</span><div style="flex:1;min-width:0;"><div class="lcn">INM — Trámites Migratorios</div><div class="lcd">FM2, FM3, residente temporal y permanente.</div></div><span class="lct" style="background:var(--forest)">Migración</span></a>
+    <a href="https://www.gob.mx/semarnat" target="_blank" class="lc"><span class="lci">🌿</span><div style="flex:1;min-width:0;"><div class="lcn">SEMARNAT / SGPA</div><div class="lcd">MIA federales, ZOFEMAT federal, zona costera y marina.</div></div><span class="lct" style="background:var(--forest)">Ambiental</span></a>
+    <a href="https://www.profeco.gob.mx" target="_blank" class="lc"><span class="lci">🛡</span><div style="flex:1;min-width:0;"><div class="lcn">PROFECO</div><div class="lcd">BRET, JOHNATHAN, RENEÉ y casos timeshare.</div></div><span class="lct" style="background:var(--forest)">PROFECO</span></a>
+    <a href="https://www.gob.mx/cofepris" target="_blank" class="lc"><span class="lci">🔬</span><div style="flex:1;min-width:0;"><div class="lcn">COFEPRIS</div><div class="lcd">Licencias y permisos sanitarios. STEM CELLS clinic.</div></div><span class="lct" style="background:var(--forest)">Salud</span></a>
+  </div></div>
+
+  <div style="margin-bottom:22px;"><div class="st">Banca y Pagos — IBG Legal</div><div class="g3">
+    <a href="https://www.santander.com.mx/bei/home/bancaElectronica.html" target="_blank" class="lc"><span class="lci">🏦</span><div style="flex:1;min-width:0;"><div class="lcn">Santander — Banca Electrónica</div><div class="lcd">Banca en línea. Cuenta MXN 6550398181-9 · CLABE 014691655039818194.</div></div><span class="lct" style="background:var(--forest)">Santander</span></a>
+    <a href="https://dashboard.stripe.com/acct_1P6COkP2d8WnuTKP/dashboard" target="_blank" class="lc"><span class="lci">💳</span><div style="flex:1;min-width:0;"><div class="lcn">Stripe — Dashboard de Pagos</div><div class="lcd">Links de pago a clientes. Dashboard de transacciones y cobros.</div></div><span class="lct" style="background:var(--forest)">Stripe</span></a>
+  </div></div>
+</div>
+
+
+<!-- SERVICIOS -->
+<div class="view" id="v-serv">
+  <div class="pt">Pagos de <span>Servicios</span></div>
+  <div class="ps">CFE · Agua · Telmex · Predial — info@ibg.legal</div>
+  <div class="st">Accesos por Servicio</div>
+  <div class="g2">
+
+    <div class="card">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+        <span style="font-size:24px;">&#9889;</span>
+        <div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:700;">CFE</div>
+          <div style="font-size:9px;color:var(--soft);text-transform:uppercase;letter-spacing:1px;">Comision Federal de Electricidad</div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px;">
+        <a href="https://app.cfe.mx/Aplicaciones/CCFE/Publico/PagoEnLinea/PagoEnLinea.aspx" target="_blank" class="lc" style="padding:8px 12px;border-left:3px solid #0047AB"><div class="lcn">Pagar recibo</div><span class="lct" style="background:#0047AB">&#8599;</span></a>
+        <a href="https://app.cfe.mx/Aplicaciones/CCFE/Publico/InicioSesion/Login.aspx" target="_blank" class="lc" style="padding:8px 12px"><div class="lcn">Mi cuenta</div><span class="lct" style="background:var(--mid)">&#8599;</span></a>
+        <a href="https://app.cfe.mx/Aplicaciones/CCFE/Publico/ReporteAveria/ReporteAveria.aspx" target="_blank" class="lc" style="padding:8px 12px"><div class="lcn">Reporte de averia</div><span class="lct" style="background:var(--mid)">&#8599;</span></a>
+      </div>
+    </div>
+
+    <div class="card">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+        <span style="font-size:24px;">&#128167;</span>
+        <div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:700;">AGUAKAN</div>
+          <div style="font-size:9px;color:var(--soft);text-transform:uppercase;letter-spacing:1px;">Zona Hotelera - Norte Cancun</div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px;">
+        <a href="https://www.aguakan.com/pagos" target="_blank" class="lc" style="padding:8px 12px;border-left:3px solid #0077BE"><div class="lcn">Pagar recibo</div><span class="lct" style="background:#0077BE">&#8599;</span></a>
+        <a href="https://www.aguakan.com/mi-cuenta" target="_blank" class="lc" style="padding:8px 12px"><div class="lcn">Mi cuenta</div><span class="lct" style="background:var(--mid)">&#8599;</span></a>
+        <a href="https://www.aguakan.com/reportes" target="_blank" class="lc" style="padding:8px 12px"><div class="lcn">Reporte de falla</div><span class="lct" style="background:var(--mid)">&#8599;</span></a>
+      </div>
+    </div>
+
+    <div class="card">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+        <span style="font-size:24px;">&#128225;</span>
+        <div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:700;">Telmex</div>
+          <div style="font-size:9px;color:var(--soft);text-transform:uppercase;letter-spacing:1px;">Telefono fijo - Internet</div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px;">
+        <a href="https://telmex.com/pagar-mi-recibo" target="_blank" class="lc" style="padding:8px 12px;border-left:3px solid #00A650"><div class="lcn">Pagar recibo</div><span class="lct" style="background:#00A650">&#8599;</span></a>
+        <a href="https://telmex.com/micuenta" target="_blank" class="lc" style="padding:8px 12px"><div class="lcn">Mi cuenta</div><span class="lct" style="background:var(--mid)">&#8599;</span></a>
+        <a href="https://telmex.com/soporte" target="_blank" class="lc" style="padding:8px 12px"><div class="lcn">Soporte tecnico</div><span class="lct" style="background:var(--mid)">&#8599;</span></a>
+      </div>
+    </div>
+
+    <!-- PREDIAL Y LICENCIAS -->
+    <div class="card">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+        <span style="font-size:24px;">🏛</span>
+        <div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:700;">Predial y Licencias</div>
+          <div style="font-size:9px;color:var(--soft);text-transform:uppercase;letter-spacing:1px;">Benito Juárez — Cancún</div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px;">
+        <a href="https://www.cancun.gob.mx/home#tramitesyservicios" target="_blank" class="lc" style="padding:8px 12px;border-left:3px solid var(--blk)"><div class="lcn">Predial y Licencia de Funcionamiento</div><div class="lcd">Portal de trámites y servicios — Gobierno de Cancún</div><span class="lct" style="background:var(--blk)">↗</span></a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- TRAMITES MUNICIPALES -->
+<div class="view" id="v-mun">
+  <div class="pt">Trámites <span>Municipales</span></div>
+  <div class="ps">Cancún · Solidaridad · Tulum · Cozumel — Portales oficiales en línea</div>
+
+  <div class="g2">
+
+    <!-- CANCÚN -->
+    <div class="card">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--pale);">
+        <div style="width:36px;height:36px;background:var(--blk);border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:18px;">🏙</div>
+        <div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:700;">Cancún</div>
+          <div style="font-size:9px;color:var(--soft);text-transform:uppercase;letter-spacing:1px;">Municipio de Benito Juárez</div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px;">
+        <a href="https://cancun-digital.mx/tramites/tipo/pipcan/inicio" target="_blank" class="lc" style="padding:8px 12px;border-left:3px solid var(--blk)"><div><div class="lcn">Cancún Digital</div><div class="lcd">Portal de trámites municipales en línea</div></div><span class="lct" style="background:var(--blk)">↗</span></a>
+        <a href="https://cancun.gob.mx/tesoreria-qr" target="_blank" class="lc" style="padding:8px 12px"><div><div class="lcn">Tesorería — Servicios en Línea</div><div class="lcd">Pago predial · Pase de caja · Recibos · Facturación</div></div><span class="lct" style="background:var(--mid)">↗</span></a>
+        <a href="https://licenciasdefuncionamiento.cancun.gob.mx/" target="_blank" class="lc" style="padding:8px 12px"><div><div class="lcn">Licencias de Funcionamiento</div><div class="lcd">Apertura · Refrendo anual · Padrón municipal</div></div><span class="lct" style="background:var(--mid)">↗</span></a>
+        <a href="https://cancun.gob.mx/tramites-y-servicios/" target="_blank" class="lc" style="padding:8px 12px"><div><div class="lcn">Trámites y Servicios</div><div class="lcd">Catálogo completo Benito Juárez</div></div><span class="lct" style="background:var(--mid)">↗</span></a>
+      </div>
+    </div>
+
+    <!-- PDC / SOLIDARIDAD -->
+    <div class="card">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--pale);">
+        <div style="width:36px;height:36px;background:var(--forest);border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:18px;">🌴</div>
+        <div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:700;">Playa del Carmen</div>
+          <div style="font-size:9px;color:var(--soft);text-transform:uppercase;letter-spacing:1px;">Municipio de Solidaridad · Puerto Aventuras</div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px;">
+        <a href="https://tramitesyservicios.playadelcarmen.gob.mx/contribuyente/" target="_blank" class="lc" style="padding:8px 12px;border-left:3px solid var(--forest)"><div><div class="lcn">Portal de Trámites y Servicios</div><div class="lcd">Predial · Licencias · Constancias · Uso de suelo</div></div><span class="lct" style="background:var(--forest)">↗</span></a>
+        <a href="https://gobiernodesolidaridad.gob.mx/" target="_blank" class="lc" style="padding:8px 12px"><div><div class="lcn">Gobierno de Solidaridad</div><div class="lcd">Portal principal del Ayuntamiento</div></div><span class="lct" style="background:var(--mid)">↗</span></a>
+        <a href="https://playadelcarmen.gob.mx/remtys_tesoreriamunicipal" target="_blank" class="lc" style="padding:8px 12px"><div><div class="lcn">Tesorería Municipal PDC</div><div class="lcd">Predial · No adeudo · Licencias de funcionamiento</div></div><span class="lct" style="background:var(--mid)">↗</span></a>
+      </div>
+    </div>
+
+    <!-- TULUM -->
+    <div class="card">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--pale);">
+        <div style="width:36px;height:36px;background:var(--green);border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:18px;">🌊</div>
+        <div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:700;">Tulum</div>
+          <div style="font-size:9px;color:var(--soft);text-transform:uppercase;letter-spacing:1px;">Municipio de Tulum — Constituido 2021</div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px;">
+        <a href="https://portaltulum.com/" target="_blank" class="lc" style="padding:8px 12px;border-left:3px solid var(--green)"><div><div class="lcn">Portal Tulum</div><div class="lcd">Predial en línea · Pago con tarjeta · Facturación · RFC + CURP</div></div><span class="lct" style="background:var(--green)">↗</span></a>
+        <a href="https://tulum.gob.mx/" target="_blank" class="lc" style="padding:8px 12px"><div><div class="lcn">Ayuntamiento de Tulum</div><div class="lcd">Portal oficial · Trámites y transparencia</div></div><span class="lct" style="background:var(--mid)">↗</span></a>
+        <a href="https://tulum.gob.mx/Transparenciaftp/2024/Catastro/XX/1er%20TRIM/MTUL_DCM_Tramites_2024.pdf" target="_blank" class="lc" style="padding:8px 12px"><div><div class="lcn">Catastro — Catálogo de Trámites 2024</div><div class="lcd">Cédula catastral · Cambio propietario · Planos</div></div><span class="lct" style="background:var(--mid)">PDF</span></a>
+      </div>
+    </div>
+
+    <!-- COZUMEL -->
+    <div class="card">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--pale);">
+        <div style="width:36px;height:36px;background:#1A4A6A;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:18px;">🐠</div>
+        <div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:700;">Cozumel</div>
+          <div style="font-size:9px;color:var(--soft);text-transform:uppercase;letter-spacing:1px;">Municipio de Cozumel</div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px;">
+        <a href="https://cozumel.gob.mx/tramites/" target="_blank" class="lc" style="padding:8px 12px;border-left:3px solid #1A4A6A"><div><div class="lcn">Trámites y Servicios</div><div class="lcd">Catálogo completo · Catastro · Licencias · Uso de suelo</div></div><span class="lct" style="background:#1A4A6A">↗</span></a>
+        <a href="https://cozumel.gob.mx/" target="_blank" class="lc" style="padding:8px 12px"><div><div class="lcn">Ayuntamiento de Cozumel</div><div class="lcd">Portal oficial del municipio</div></div><span class="lct" style="background:var(--mid)">↗</span></a>
+        <div class="lc" style="padding:8px 12px;border-style:dashed;cursor:default;opacity:.7;"><div><div class="lcn" style="color:var(--mid)">Pago predial</div><div class="lcd">Presencial — Tesorería Municipal, 2° piso Palacio Municipal · Tel. (987) 872-9800 ext. 5500</div></div></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</div><!-- /main -->
+<div id="ov"><div id="mb"></div></div>
+<script>
+function go(id){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));
+  document.querySelectorAll('nav button').forEach(b=>b.classList.remove('on'));
+  document.getElementById('v-'+id).classList.add('on');
+  document.getElementById('n-'+id).classList.add('on');
+  if(window.innerWidth<=768)document.getElementById('sb').classList.remove('open');
+}
+function tsb(){document.getElementById('sb').classList.toggle('open')}
+</script>
+</body>
+</html>
