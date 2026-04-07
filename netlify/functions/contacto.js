@@ -23,12 +23,12 @@ exports.handler = async function(event) {
   }
 
   const transporter = nodemailer.createTransport({
-    host: 'smtpout.secureserver.net',
+    host: 'smtp.gmail.com',
     port: 465,
     secure: true,
     auth: {
       user: 'info@ibg.legal',
-      pass: 'ibgLegal888$'
+      pass: 'futnpwfoxmtztrwb'
     }
   });
 
