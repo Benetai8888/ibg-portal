@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://www.ibg.legal/sitemap.xml
+
+# Crawl-delay (opcional, respetuoso con bots)
+Crawl-delay: 1
