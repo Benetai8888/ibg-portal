@@ -1610,7 +1610,7 @@
     btn.style.cursor = 'default';
 
     try {
-      const response = await fetch('/.netlify/functions/contacto', {
+      const response = await fetch('https://ibg-contacto-info-16544787s-projects.vercel.app/api/contacto', {
         method: 'POST',
         body: JSON.stringify({
           nombre: data.get('nombre'),
