@@ -1613,14 +1613,16 @@
       const response = await fetch('https://formsubmit.co/ajax/info@ibg.legal', {
         method: 'POST',
         body: JSON.stringify({
-          nombre: data.get('nombre'),
-          email: data.get('email'),
-          phone: data.get('phone') || '',
-          area: data.get('area') || '',
-          mensaje: data.get('mensaje'),
-          _subject: 'Nueva consulta IBG Legal — ' + (data.get('area') || 'Área no especificada'),
+          'Full Name': data.get('nombre'),
+          'Company': data.get('empresa') || '',
+          'Email': data.get('email'),
+          'Phone': data.get('phone') || '',
+          'Area of Practice': data.get('area') || '',
+          'Message': data.get('mensaje'),
+          _subject: 'Nueva consulta IBG Legal — ' + (data.get('nombre') || 'Nuevo contacto'),
           _captcha: 'false',
-          _template: 'box'
+          _template: 'box',
+          _replyto: data.get('email')
         }),
         headers: {
           'Accept': 'application/json',
